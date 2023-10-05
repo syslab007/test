@@ -1,18 +1,40 @@
-import { test, expect } from '@playwright/test';
+const { chromium } = require('playwright');
 
-test('has title', async ({ page }) function {
-  await page.goto('https://playwright.dev/');
+(async () => {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+  // Navigate to the Google homepage.
+  await page.goto('https://www.google.com');
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  // Get the search input element.
+  const searchInput = await page.$('input[name="q"]');
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  // Enter the search term "Playwright".
+  await searchInput.type('Playwright');
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
+  // Click the search button.
+  const searchButton = await page.$('input[type="submit"]');
+  await searchButton.click();
+
+  // Wait for the search results to load.
+  await page.waitForNavigation();
+
+  // Get the first search result link.
+  const firstSearchResultLink = await page.$('a.r');
+
+  // Click the first search result link.
+  await firstSearchResultLink.click();
+
+  // Wait for the search result page to load.
+  await page.waitForNavigation();
+
+  // Get the title of the search result page.
+  const searchResultTitle = await page.title();
+
+  // Print the title of the search result page to the console.
+  console.log(searchResultTitle);
+
+  // Close the browser.
+  await browser.close();
+})();
